@@ -6,7 +6,7 @@ const ProgressCard = ({
   totalQuestions,
   currentQuestionIndex,
   selectedOptions,
-  markForReview,
+  markedForReview,
   onQuestionSelect,
   indexToGuidMap,
 }) => {

@@ -31,14 +31,18 @@ const useMyTestApi = (type) => {
         },
       });
 
-      if (response.data?.success) {
-        setTestData(response.data?.payload?.data || []);
-        console.log("test data", testData);
+      const { success, message, payload } = response.data;
+
+      if (success) {
+        setTestData(payload?.data || []);
+        setError(null);
+      } else if (message === "RECORDS_NOT_FOUND") {
+        setTestData([]);
+        setError(null);
       } else {
         setError("Error fetching test data");
       }
     } catch (err) {
-      console.error("Error fetching test data:", err);
       setError("An error occurred while fetching test data.");
     }
   };

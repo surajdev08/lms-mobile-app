@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { Button } from "react-native-paper";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import useTakeTestApi from "../hooks/test/useTakeTestApi";
+import * as Device from "expo-device";
+import * as Location from "expo-location";
+import * as ScreenCapture from "expo-screen-capture";
+import {
+  activateKeepAwakeAsync,
+  deactivateKeepAwakeAsync,
+} from "expo-keep-awake";
 
 const DATA = [
   { id: "1", instructions: "Instruction 1: Read all details carefully." },
@@ -15,10 +22,36 @@ const TestInstructions = () => {
   const router = useRouter();
   const { guid } = useLocalSearchParams();
   const { fetchTestQuestions, createSession } = useTakeTestApi(); // Hook to fetch test data
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      // Ask for permission
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      // Get current location
+      let loc = await Location.getCurrentPositionAsync({});
+      setLocation(loc);
+    })();
+  }, []);
 
   const handleStartTest = async () => {
+    await ScreenCapture.preventScreenCaptureAsync();
+    await activateKeepAwakeAsync();
+    console.log("location", location);
     // Trigger API call when the "Start Test" button is pressed
-
+    console.log(
+      "Device Info:",
+      Device.osName,
+      Device.osVersion,
+      Device.deviceName
+    );
     const sessionId = await createSession(guid);
     fetchTestQuestions(guid);
 

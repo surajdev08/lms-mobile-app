@@ -3,7 +3,13 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Icon, IconButton, MD3Colors } from "react-native-paper";
-const TestHeader = ({ settings, openSheet, handleSubmit }) => {
+const TestHeader = ({
+  settings,
+  openSheet,
+  handleSubmit,
+  questionMarks,
+  negativeMarks,
+}) => {
   const [timeLeft, setTimeLeft] = useState(settings?.test_time || 0);
   const router = useRouter();
   useEffect(() => {
@@ -33,13 +39,13 @@ const TestHeader = ({ settings, openSheet, handleSubmit }) => {
         <View
           style={{ height: "24px", width: "60px", backgroundColor: "#E7F4E8" }}
         >
-          <Text>+ 2</Text>
+          <Text>{questionMarks}</Text>
         </View>
 
         <View
           style={{ height: "24px", width: "60px", backgroundColor: "#FFE2E5" }}
         >
-          <Text>- 1</Text>
+          <Text>{negativeMarks}</Text>
         </View>
       </View>
 

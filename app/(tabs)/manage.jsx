@@ -22,6 +22,10 @@ const manage = () => {
     fetchUserById();
   }, []);
 
+  const handleLogout = async () => {
+    await logout();
+  };
+
   const name = userData?.first_name + " " + userData?.last_name;
   const router = useRouter();
   return (
@@ -150,6 +154,7 @@ const manage = () => {
                 }}
                 titleStyle={{ color: "red" }}
                 right={(props) => <List.Icon {...props} icon="arrow-right" />}
+                onPress={handleLogout}
               />
             </View>
           </View>

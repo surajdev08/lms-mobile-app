@@ -42,7 +42,7 @@ const useTakeTestApi = () => {
 
       if (response.data?.success) {
         setTestQuestion(response.data?.payload);
-
+        console.log("token", token);
         setLoading(false);
       } else {
         console.error("Error fetching test data");
@@ -57,7 +57,7 @@ const useTakeTestApi = () => {
   const createSession = async (guid) => {
     const sessionId = await generateAndSaveSessionKey();
     const userGuid = await getGuid("guid");
-
+    const token = await getToken("access_token");
     const formData = new FormData();
     formData.append("user_guid", userGuid);
     formData.append("session_guid", sessionId);
@@ -69,6 +69,8 @@ const useTakeTestApi = () => {
         {
           headers: {
             Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
@@ -142,6 +144,35 @@ const useTakeTestApi = () => {
     }
   };
 
+  const bookmarkQuestion = async (testGuid, questionGuid) => {
+    const formData = new FormData();
+    const token = await getToken("access_token");
+    formData.append("test_guid", testGuid);
+    formData.append("question_guid", questionGuid);
+
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/test/learner/bookmark/add`,
+        formData,
+        {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Question bookmarked successfully!");
+      } else {
+        console.log("Failed to bookmark the question.");
+      }
+    } catch (error) {
+      console.log("Error bookmarking the question: " + error.message);
+    }
+  };
+
   return {
     testQuestions,
     setTestQuestion,
@@ -150,6 +181,7 @@ const useTakeTestApi = () => {
     loading,
     createSession,
     submitTest,
+    bookmarkQuestion,
   };
 };
 

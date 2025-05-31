@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  Alert,
 } from "react-native";
 import { Text, TextInput, Button, Checkbox } from "react-native-paper";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -14,16 +15,16 @@ import { useRouter } from "expo-router";
 import useLoginApi from "./hooks/useLoginApi";
 import { useAuth } from "../context/AuthContext";
 import { saveToken, saveGuid } from "../utils/secureStore";
-
+import useSettingsApi from "./hooks/useSettingsApi";
 const RightContent = () => (
   <AntDesign name="customerservice" size={24} color="#006FFD" />
 );
 
 const index = () => {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const { loginUser } = useLoginApi();
   const router = useRouter();
-
+  const { resgistrationSettings, settings } = useSettingsApi();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [checked, setChecked] = React.useState(false);
@@ -37,7 +38,7 @@ const index = () => {
         await saveToken(response.access_token);
         await saveGuid(response.user.guid);
         login({ user: response.user, token: response.access_token });
-        router.replace("/(tabs)");
+        router.replace("/(tabs)/");
       } else {
         alert("Invalid credentials");
       }
@@ -47,7 +48,27 @@ const index = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    resgistrationSettings();
+  }, []);
 
+  useEffect(() => {
+    if (user) {
+      router.replace("/(tabs)/");
+    }
+  }, [user]);
+
+  const handleRegisterPress = () => {
+    if (settings?.disable_user_registration === "0") {
+      router.push("/register");
+    } else {
+      Alert.alert("Registration Disabled", "Please contact support.");
+    }
+  };
+
+  const handleForgotPasswordPress = () => {
+    router.push("/forgotpassword");
+  };
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -98,7 +119,7 @@ const index = () => {
               status={checked ? "checked" : "unchecked"}
               onPress={() => setChecked(!checked)}
             />
-            <Pressable>
+            <Pressable onPress={handleForgotPasswordPress}>
               <Text style={styles.linkText}>Forgot Password?</Text>
             </Pressable>
           </View>
@@ -116,10 +137,7 @@ const index = () => {
           </View>
 
           {/* Register */}
-          <Pressable
-            onPress={() => router.push("/register")}
-            style={styles.action}
-          >
+          <Pressable onPress={handleRegisterPress} style={styles.action}>
             <Text style={styles.linkText}>Register your Account?</Text>
           </Pressable>
         </View>

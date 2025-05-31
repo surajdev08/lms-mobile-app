@@ -32,17 +32,17 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { OtpInput } from "react-native-otp-entry";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { useAuth } from "../../context/AuthContext";
-import useResetPasswordApi from "../hooks/useResetPasswordApi";
-import useUserApi from "../hooks/user/useUserApi";
+import { useAuth } from "../context/AuthContext";
+import useResetPasswordApi from "./hooks/useResetPasswordApi";
+
 const RightContent = (props) => (
   <AntDesign {...props} name="customerservice" size={24} color="#006FFD" />
 );
 
-const changepassowrd = () => {
+const forgotpassword = () => {
   const router = useRouter();
   const { login } = useAuth();
-  const { fetchUserById, userData } = useUserApi();
+
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -62,15 +62,12 @@ const changepassowrd = () => {
   } = useResetPasswordApi(email, sendTrigger);
 
   const handleSendOtp = () => {
-    if (email.trim().toLowerCase() !== userData.email.toLowerCase()) {
-      Alert.alert("Please enter a valid email");
-      return;
-    }
+    // if (email.trim().toLowerCase() !== userData.email.toLowerCase()) {
+    //   Alert.alert("Please enter a valid email");
+    //   return;
+    // }
     validateEmail(email);
   };
-  useEffect(() => {
-    fetchUserById();
-  }, []);
 
   useEffect(() => {
     if (emailStatus === "success" && response?.success) {
@@ -121,72 +118,74 @@ const changepassowrd = () => {
           <Text>Help?</Text>
         </View>
 
-        {status === "email" ? (
-          <View style={styles.content}>
-            <TextInput
-              mode="outlined"
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-              autoCapitalize="none"
-            />
-            <Button
-              style={{ backgroundColor: "#006FFD", width: "100%" }}
-              mode="contained"
-              onPress={handleSendOtp}
-              loading={emailStatus === "loading"}
-            >
-              Send OTP
-            </Button>
-          </View>
-        ) : status === "otp" ? (
-          <View style={styles.content}>
-            <OtpInput numberOfDigits={6} value={otp} onTextChange={setOtp} />
-            <Button
-              style={{ backgroundColor: "#006FFD", width: "100%" }}
-              mode="contained"
-              onPress={verifyOtp}
-            >
-              Validate OTP
-            </Button>
-          </View>
-        ) : status === "register" ? (
-          <View style={styles.content}>
-            <TextInput
-              mode="outlined"
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-            />
-            <TextInput
-              mode="outlined"
-              label="Confirm Password"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-            />
-            <Button
-              style={{ backgroundColor: "#006FFD", width: "100%" }}
-              mode="contained"
-              onPress={handleRegister}
-            >
-              Reset
-            </Button>
-          </View>
-        ) : (
-          <View style={styles.headerText}>
-            <Text style={{ fontSize: 20, color: "black" }}>
-              Password Changed Successfully
-            </Text>
-          </View>
-        )}
+        <View style={{ justifyContent: "center", flex: 1 }}>
+          {status === "email" ? (
+            <View style={styles.content}>
+              <TextInput
+                mode="outlined"
+                label="Email"
+                value={email}
+                onChangeText={setEmail}
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+                autoCapitalize="none"
+              />
+              <Button
+                style={{ backgroundColor: "#006FFD", width: "100%" }}
+                mode="contained"
+                onPress={handleSendOtp}
+                loading={emailStatus === "loading"}
+              >
+                Send OTP
+              </Button>
+            </View>
+          ) : status === "otp" ? (
+            <View style={styles.content}>
+              <OtpInput numberOfDigits={6} value={otp} onTextChange={setOtp} />
+              <Button
+                style={{ backgroundColor: "#006FFD", width: "100%" }}
+                mode="contained"
+                onPress={verifyOtp}
+              >
+                Validate OTP
+              </Button>
+            </View>
+          ) : status === "register" ? (
+            <View style={styles.content}>
+              <TextInput
+                mode="outlined"
+                label="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+              />
+              <TextInput
+                mode="outlined"
+                label="Confirm Password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+              />
+              <Button
+                style={{ backgroundColor: "#006FFD", width: "100%" }}
+                mode="contained"
+                onPress={handleRegister}
+              >
+                Reset
+              </Button>
+            </View>
+          ) : (
+            <View style={styles.headerText}>
+              <Text style={{ fontSize: 20, color: "black" }}>
+                Password Changed Successfully
+              </Text>
+            </View>
+          )}
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -235,4 +234,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default changepassowrd;
+export default forgotpassword;

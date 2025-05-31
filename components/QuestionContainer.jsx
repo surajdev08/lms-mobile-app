@@ -16,6 +16,11 @@ import useTakeTestApi from "../app/hooks/test/useTakeTestApi";
 import TestHeader from "./TestHeader";
 import ProgressCard from "./ProgressCard";
 import { useRouter } from "expo-router";
+import * as ScreenCapture from "expo-screen-capture";
+import {
+  activateKeepAwakeAsync,
+  deactivateKeepAwakeAsync,
+} from "expo-keep-awake";
 
 const QuestionContainer = () => {
   const { guid } = useLocalSearchParams();
@@ -139,6 +144,8 @@ const QuestionContainer = () => {
 
   const handleSubmit = async () => {
     saveTimeForCurrentQuestion();
+    await ScreenCapture.allowScreenCaptureAsync();
+    await deactivateKeepAwakeAsync();
 
     try {
       const response = await submitTest(guid, selectedOptions, timeTaken);
@@ -182,9 +189,14 @@ const QuestionContainer = () => {
           settings={testQuestions?.data?.settings}
           openSheet={openSheet}
           handleSubmit={handleSubmit}
+          questionMarks={currentQuestion?.marks}
+          negativeMarks={currentQuestion?.neg_marks}
         />
 
         <QuestionCard
+          testGuid={guid}
+          questionGuid={currentQuestion?.guid}
+          questionTime={questionTimer}
           currentQuestionIndex={currentQuestionIndex}
           questionText={currentQuestion?.question}
           options={currentQuestion?.choices}
@@ -193,6 +205,7 @@ const QuestionContainer = () => {
           onSelectOption={(value) =>
             handleOptionSelect(currentQuestion?.guid, value)
           }
+          isMarkedForReview={markForReview?.[currentQuestion.guid] || false}
         />
 
         <TestNavigation
