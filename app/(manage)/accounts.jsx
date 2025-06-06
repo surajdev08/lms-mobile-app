@@ -60,100 +60,105 @@ const Accounts = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1 }}
-      >
-        <View style={styles.header}>
-          <IconButton
-            icon="keyboard-backspace"
-            size={20}
-            onPress={() => router.back()}
-          />
-          <Text>My Account</Text>
-          <Text>Help?</Text>
-        </View>
-
-        <ScrollView
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 100 }}
-          keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.container}>
-            <Text style={styles.title}>Update Profile</Text>
-
-            <TextInput
-              mode="outlined"
-              label="First Name"
-              value={first_name}
-              onChangeText={setFirstName}
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-              autoCapitalize="none"
+          <View style={styles.header}>
+            <IconButton
+              icon="keyboard-backspace"
+              size={20}
+              onPress={() => router.back()}
             />
-            <TextInput
-              mode="outlined"
-              label="Last Name"
-              value={last_name}
-              onChangeText={setLastName}
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-              autoCapitalize="none"
-            />
-            <TextInput
-              mode="outlined"
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-              autoCapitalize="none"
-            />
-            <TextInput
-              mode="outlined"
-              label="Contact Number"
-              value={mobile}
-              onChangeText={setMobile}
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-            />
-
-            <DropDownPicker
-              open={open}
-              value={countryValue}
-              items={country}
-              setOpen={setOpen}
-              setValue={setCountryValue}
-              setItems={setCountry}
-              placeholder="Select your country"
-              style={{ marginTop: 20 }}
-              dropDownContainerStyle={{ zIndex: 1000 }}
-              zIndex={1000}
-              zIndexInverse={3000}
-            />
-
-            <View style={styles.buttonContainer}>
-              <Button
-                mode="contained"
-                onPress={() => {
-                  setFirstName("");
-                  setLastName("");
-                  setEmail("");
-                  setMobile("");
-                  setCountryValue(null);
-                }}
-              >
-                Reset
-              </Button>
-              <Button mode="contained" onPress={handleSubmit}>
-                Save
-              </Button>
-            </View>
+            <Text>My Account</Text>
+            <Text>Help?</Text>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingBottom: 100 }}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.container}>
+              <Text style={styles.title}>Update Profile</Text>
+
+              <TextInput
+                mode="outlined"
+                label="First Name"
+                value={first_name}
+                onChangeText={setFirstName}
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+                autoCapitalize="none"
+              />
+              <TextInput
+                mode="outlined"
+                label="Last Name"
+                value={last_name}
+                onChangeText={setLastName}
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+                autoCapitalize="none"
+              />
+              <TextInput
+                mode="outlined"
+                label="Email"
+                value={email}
+                onChangeText={setEmail}
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+                autoCapitalize="none"
+              />
+              <TextInput
+                mode="outlined"
+                label="Contact Number"
+                value={mobile}
+                onChangeText={setMobile}
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+              />
+
+              <DropDownPicker
+                open={open}
+                value={countryValue}
+                items={country}
+                setOpen={setOpen}
+                setValue={setCountryValue}
+                setItems={setCountry}
+                placeholder="Select your country"
+                style={{ marginTop: 20 }}
+                dropDownContainerStyle={{ zIndex: 1000 }}
+                zIndex={1000}
+                zIndexInverse={3000}
+              />
+
+              <View style={styles.buttonContainer}>
+                <Button
+                  mode="contained"
+                  onPress={() => {
+                    setFirstName("");
+                    setLastName("");
+                    setEmail("");
+                    setMobile("");
+                    setCountryValue(null);
+                  }}
+                >
+                  Reset
+                </Button>
+                <Button mode="contained" onPress={handleSubmit}>
+                  Save
+                </Button>
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 

@@ -8,7 +8,13 @@ import {
   Pressable,
   Alert,
 } from "react-native";
-import { Text, TextInput, Button, Checkbox } from "react-native-paper";
+import {
+  Text,
+  TextInput,
+  Button,
+  Checkbox,
+  IconButton,
+} from "react-native-paper";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -20,7 +26,7 @@ const RightContent = () => (
   <AntDesign name="customerservice" size={24} color="#006FFD" />
 );
 
-const index = () => {
+const loginPage = () => {
   const { login, user } = useAuth();
   const { loginUser } = useLoginApi();
   const router = useRouter();
@@ -29,8 +35,22 @@ const index = () => {
   const [password, setPassword] = React.useState("");
   const [checked, setChecked] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [captchaQuestion, setCaptchaQuestion] = useState("");
+  const [captchaAnswer, setCaptchaAnswer] = useState(null);
+  const [userCaptchaInput, setUserCaptchaInput] = useState("");
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Missing Fields", "Email and Password are required.");
+      return;
+    }
+
+    if (parseInt(userCaptchaInput) !== captchaAnswer) {
+      Alert.alert("Invalid CAPTCHA", "Please solve the CAPTCHA correctly.");
+      generateCaptcha();
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await loginUser(email, password);
@@ -38,29 +58,30 @@ const index = () => {
         await saveToken(response.access_token);
         await saveGuid(response.user.guid);
         login({ user: response.user, token: response.access_token });
-        router.replace("/(tabs)/");
+        router.push("/dashboard");
       } else {
-        alert("Invalid credentials");
+        Alert.alert("Login Failed", "Invalid credentials");
       }
     } catch (err) {
-      alert("Login failed");
+      Alert.alert("Error", "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     resgistrationSettings();
   }, []);
 
   useEffect(() => {
     if (user) {
-      router.replace("/(tabs)/");
+      router.push("/register");
     }
   }, [user]);
 
   const handleRegisterPress = () => {
     if (settings?.disable_user_registration === "0") {
-      router.push("/register");
+      router.push("/dashboard");
     } else {
       Alert.alert("Registration Disabled", "Please contact support.");
     }
@@ -69,6 +90,18 @@ const index = () => {
   const handleForgotPasswordPress = () => {
     router.push("/forgotpassword");
   };
+
+  const generateCaptcha = () => {
+    const a = Math.floor(Math.random() * 10);
+    const b = Math.floor(Math.random() * 10);
+    setCaptchaQuestion(`${a} + ${b}`);
+    setCaptchaAnswer(a + b);
+  };
+
+  useEffect(() => {
+    generateCaptcha();
+  }, []);
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -115,15 +148,25 @@ const index = () => {
 
           {/* Checkbox + Link */}
           <View style={styles.links}>
-            <Checkbox
-              status={checked ? "checked" : "unchecked"}
-              onPress={() => setChecked(!checked)}
-            />
-            <Pressable onPress={handleForgotPasswordPress}>
-              <Text style={styles.linkText}>Forgot Password?</Text>
-            </Pressable>
-          </View>
+            <View style={{ marginTop: 10 }}>
+              <Text variant="bodyLarge" style={{ marginBottom: 5 }}>
+                {captchaQuestion} = ?
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <TextInput
+                mode="outlined"
+                value={userCaptchaInput}
+                onChangeText={setUserCaptchaInput}
+                keyboardType="numeric"
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+                style={{ height: 10 }}
+              />
 
+              <IconButton icon="refresh" size={20} onPress={generateCaptcha} />
+            </View>
+          </View>
           {/* Action */}
           <View style={styles.action}>
             <Button
@@ -137,9 +180,15 @@ const index = () => {
           </View>
 
           {/* Register */}
-          <Pressable onPress={handleRegisterPress} style={styles.action}>
-            <Text style={styles.linkText}>Register your Account?</Text>
-          </Pressable>
+          <View style={{ alignItems: "center", gap: 20 }}>
+            <Pressable onPress={handleRegisterPress} style={styles.action}>
+              <Text style={styles.linkText}>Register your Account?</Text>
+            </Pressable>
+
+            <Pressable onPress={handleForgotPasswordPress}>
+              <Text style={styles.linkText}>Forgot Password?</Text>
+            </Pressable>
+          </View>
         </View>
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -179,8 +228,9 @@ const styles = StyleSheet.create({
   },
   links: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    height: 40,
     alignItems: "center",
+    gap: 10,
   },
   linkText: {
     color: "#006FFD",
@@ -196,4 +246,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default index;
+export default loginPage;

@@ -144,8 +144,6 @@ const QuestionContainer = () => {
 
   const handleSubmit = async () => {
     saveTimeForCurrentQuestion();
-    await ScreenCapture.allowScreenCaptureAsync();
-    await deactivateKeepAwakeAsync();
 
     try {
       const response = await submitTest(guid, selectedOptions, timeTaken);
@@ -160,6 +158,7 @@ const QuestionContainer = () => {
     } catch (error) {
       console.error("Error during submission:", error);
     }
+    await deactivateKeepAwakeAsync();
   };
 
   const openSheet = () => {
@@ -227,7 +226,7 @@ const QuestionContainer = () => {
             totalQuestions={totalQuestions}
             currentQuestionIndex={currentQuestionIndex}
             selectedOptions={selectedOptions}
-            markForReview={markForReview}
+            // markForReview={markForReview}
             indexToGuidMap={indexToGuidMap}
             onQuestionSelect={(index) => {
               saveTimeForCurrentQuestion(); // Save time before moving

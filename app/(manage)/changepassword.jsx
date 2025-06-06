@@ -236,3 +236,8 @@ const styles = StyleSheet.create({
 });
 
 export default changepassowrd;
+
+export const options = {
+  title: "Change Password",
+  headerShown: true,
+};

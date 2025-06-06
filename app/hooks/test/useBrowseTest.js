@@ -1,71 +1,54 @@
-import { useEffect, useState } from "react";
-
+import { useState } from "react";
 import axios from "axios";
+import { getToken, getGuid } from "../../../utils/secureStore";
+
+const API_BASE_URL = "https://test.lms.developer1.website";
 
 const useBrowseTestApi = () => {
-  const [data, setData] = useState([]);
-  const [metaData, setMetaData] = useState([]);
-  const [loader, setLoader] = useState(false);
+  const [browseData, setBrowseData] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [status, setStatus] = useState("idle");
 
-  const fetchAllTestData = async (
-    page,
-    results_per_page,
-    searchKeyword,
-    status
-  ) => {
-    const formData = new FormData();
-
-    console.info(status, "status");
-
-    if (page) {
-      formData.append("page", page); // Add pagination: current page
-    }
-
-    if (results_per_page) {
-      formData.append("results_per_page", results_per_page);
-    }
-
-    if (searchKeyword) {
-      formData.append("search", searchKeyword); // Add the search term to the formData
-    }
-
-    if (status?.length) {
-      formData.append("status", status === "Published" ? "1" : "0"); // Add the search term to the formData
-    }
+  const fetchBrowseTests = async (search = "", order_by = "newest_first") => {
+    setLoading(true);
+    setError(null);
 
     try {
-      await api
-        .post(`https://test.lms.developer1.website/test/all`, formData, {
-          // Authorization: 'Bearer a87afd2b2930bc58266c773f66b78b57e157fef39dd6fa31f40bfd117c2c26b1',
-          Network: "dev369",
-          accept: "application/json",
-        })
-        ?.then((res) => {
-          setLoader(false);
-          setData(res?.data?.payload?.data);
-          setMetaData(res?.data?.payload?.meta);
-        })
-        ?.catch((err) => {
-          if (err.response?.status === 501) {
-            setLoader(false); // Stop the loader if the API returns 501
-            setData([]);
-            setMetaData([]);
-          }
-        });
-    } catch (error) {
-      console.error("Error fetching data:", error);
+      const token = await getToken("access_token");
+      const guid = await getGuid("guid");
+
+      if (!token || !guid) {
+        setError("Missing token or user GUID");
+        setLoading(false);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("search", search);
+      formData.append("order_by", order_by);
+
+      const response = await axios.post(`${API_BASE_URL}/test/all`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data?.success) {
+        setBrowseData(response.data?.payload?.data);
+      } else {
+        setError("Failed to fetch browse test data");
+      }
+    } catch (err) {
+      console.error("Browse API error:", err);
+      setError("An error occurred while fetching browse data.");
     }
+
+    setLoading(false);
   };
-  return {
-    fetchAllTestData,
-    data,
-    metaData,
-    loader,
-    error,
-    status,
-  };
+
+  return { loading, error, browseData, fetchBrowseTests };
 };
 
 export default useBrowseTestApi;

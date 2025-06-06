@@ -7,7 +7,7 @@ const TestSubmittedScreen = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const handleGoHome = () => {
-    router.push("/(tabs)"); // make sure 'Home' exists in your navigator
+    router.push("/(tabs)/dashboard"); // make sure 'Home' exists in your navigator
   };
 
   return (

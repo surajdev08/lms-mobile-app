@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Image, Pressable } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  Pressable,
+  KeyboardAvoidingView,
+} from "react-native";
 import { Text, Button, TextInput } from "react-native-paper";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { OtpInput } from "react-native-otp-entry";
@@ -72,137 +78,142 @@ const Register = () => {
   }, [emailStatus, response?.message]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.card}>
-        <View style={styles.header}>
-          <Text style={{ fontSize: 20, color: "#006FFD" }}>LMS</Text>
-          <RightContent />
-        </View>
-
-        <View style={styles.coverContainer}>
-          <Image
-            style={styles.coverImage}
-            source={require("../assets/login.png")}
-          />
-        </View>
-
-        <View style={styles.headerText}>
-          <Text style={{ fontSize: 20, color: "black" }}>
-            Register Your Account
-          </Text>
-        </View>
-
-        {status === "email" ? (
-          <View style={styles.content}>
-            <TextInput
-              mode="outlined"
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-              autoCapitalize="none"
-            />
-            <Button
-              style={{ backgroundColor: "#006FFD", width: "100%" }}
-              mode="contained"
-              onPress={handleSendOtp}
-              loading={emailStatus === "loading"}
-            >
-              Send OTP
-            </Button>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <SafeAreaView style={styles.container}>
+        <View style={styles.card}>
+          <View style={styles.header}>
+            <Text style={{ fontSize: 20, color: "#006FFD" }}>LMS</Text>
+            <RightContent />
           </View>
-        ) : status === "otp" ? (
-          <View style={styles.content}>
-            <OtpInput numberOfDigits={6} value={otp} onTextChange={setOtp} />
-            <Button
-              style={{ backgroundColor: "#006FFD", width: "100%" }}
-              mode="contained"
-              onPress={verifyOtp}
-            >
-              Validate OTP
-            </Button>
+
+          <View style={styles.coverContainer}>
+            <Image
+              style={styles.coverImage}
+              source={require("../assets/login.png")}
+            />
           </View>
-        ) : status === "register" ? (
-          <View style={styles.content}>
-            <TextInput
-              mode="outlined"
-              label="First Name"
-              value={firstName}
-              onChangeText={setFirstName}
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-            />
-            <TextInput
-              mode="outlined"
-              label="Last Name"
-              value={lastName}
-              onChangeText={setLastName}
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-            />
-            <TextInput
-              mode="outlined"
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-            />
-            <TextInput
-              mode="outlined"
-              label="Confirm Password"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-            />
-            <Button
-              style={{ backgroundColor: "#006FFD", width: "100%" }}
-              mode="contained"
-              onPress={handleRegister}
-            >
-              Register
-            </Button>
-          </View>
-        ) : (
+
           <View style={styles.headerText}>
             <Text style={{ fontSize: 20, color: "black" }}>
-              Account Created Successfully
+              Register Your Account
             </Text>
+          </View>
 
+          {status === "email" ? (
+            <View style={styles.content}>
+              <TextInput
+                mode="outlined"
+                label="Email"
+                value={email}
+                onChangeText={setEmail}
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+                autoCapitalize="none"
+              />
+              <Button
+                style={{ backgroundColor: "#006FFD", width: "100%" }}
+                mode="contained"
+                onPress={handleSendOtp}
+                loading={emailStatus === "loading"}
+              >
+                Send OTP
+              </Button>
+            </View>
+          ) : status === "otp" ? (
+            <View style={styles.content}>
+              <OtpInput numberOfDigits={6} value={otp} onTextChange={setOtp} />
+              <Button
+                style={{ backgroundColor: "#006FFD", width: "100%" }}
+                mode="contained"
+                onPress={verifyOtp}
+              >
+                Validate OTP
+              </Button>
+            </View>
+          ) : status === "register" ? (
+            <View style={styles.content}>
+              <TextInput
+                mode="outlined"
+                label="First Name"
+                value={firstName}
+                onChangeText={setFirstName}
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+              />
+              <TextInput
+                mode="outlined"
+                label="Last Name"
+                value={lastName}
+                onChangeText={setLastName}
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+              />
+              <TextInput
+                mode="outlined"
+                label="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+              />
+              <TextInput
+                mode="outlined"
+                label="Confirm Password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+              />
+              <Button
+                style={{ backgroundColor: "#006FFD", width: "100%" }}
+                mode="contained"
+                onPress={handleRegister}
+              >
+                Register
+              </Button>
+            </View>
+          ) : (
+            <View style={styles.headerText}>
+              <Text style={{ fontSize: 20, color: "black" }}>
+                Account Created Successfully
+              </Text>
+
+              <Pressable style={styles.links} onPress={() => router.back()}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: "#006FFD",
+                    textDecorationLine: "underline",
+                    paddingTop: 10,
+                  }}
+                >
+                  Click here to Sign In
+                </Text>
+              </Pressable>
+            </View>
+          )}
+
+          {status !== "success" && (
             <Pressable style={styles.links} onPress={() => router.back()}>
               <Text
                 style={{
                   fontSize: 16,
                   color: "#006FFD",
                   textDecorationLine: "underline",
-                  paddingTop: 10,
                 }}
               >
-                Click here to Sign In
+                Sign In Instead?
               </Text>
             </Pressable>
-          </View>
-        )}
-
-        {status !== "success" && (
-          <Pressable style={styles.links} onPress={() => router.back()}>
-            <Text
-              style={{
-                fontSize: 16,
-                color: "#006FFD",
-                textDecorationLine: "underline",
-              }}
-            >
-              Sign In Instead?
-            </Text>
-          </Pressable>
-        )}
-      </View>
-    </SafeAreaView>
+          )}
+        </View>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 

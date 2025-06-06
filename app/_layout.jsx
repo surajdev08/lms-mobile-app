@@ -11,7 +11,7 @@ function RedirectIfNeeded() {
   useEffect(() => {
     const inAuthGroup = segments[0] !== "(tabs)";
     if (user && inAuthGroup) {
-      router.replace("/(tabs)/");
+      router.replace("/dashboard");
     }
   }, [user]);
 

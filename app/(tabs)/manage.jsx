@@ -17,17 +17,18 @@ import { useAuth } from "../../context/AuthContext";
 const manage = () => {
   const { userData, fetchUserById } = useUserApi();
   const { logout } = useAuth();
-
+  const router = useRouter();
   useEffect(() => {
     fetchUserById();
   }, []);
 
   const handleLogout = async () => {
     await logout();
+    router.replace("/loginPage");
   };
 
   const name = userData?.first_name + " " + userData?.last_name;
-  const router = useRouter();
+
   return (
     <PaperProvider
       settings={{

@@ -1,6 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs, Redirect } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
+import { View, ActivityIndicator } from "react-native";
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
@@ -13,13 +14,13 @@ export default function TabLayout() {
     );
   }
 
-  if (!user) {
-    return <Redirect href="/index" />;
-  }
+  // if (!user) {
+  //   return <Redirect href="/dashboard" />;
+  // }
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: "blue", headerShown: false }}>
       <Tabs.Screen
-        name="index"
+        name="dashboard"
         options={{
           title: "Dashboard",
           tabBarIcon: ({ color }) => (
@@ -48,6 +49,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="report"
         options={{
+          headerShown: true,
+          headerTitle: "Submissions",
           title: "Report",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="file-text-o" color={color} />

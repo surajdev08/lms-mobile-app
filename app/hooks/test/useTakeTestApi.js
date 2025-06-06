@@ -95,7 +95,7 @@ const useTakeTestApi = () => {
     const formData = new FormData();
     const sessionId = await getSessionKey();
     const userGuid = await getGuid("guid");
-
+    const token = await getToken("access_token");
     formData.append("session_guid", sessionId);
     formData.append("user_guid", userGuid);
 
@@ -127,7 +127,9 @@ const useTakeTestApi = () => {
         formData,
         {
           headers: {
+            Authorization: `Bearer ${token}`,
             Accept: "application/json",
+            "Content-Type": "application/json",
           },
         }
       );

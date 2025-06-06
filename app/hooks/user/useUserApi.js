@@ -28,6 +28,7 @@ const useUserApi = () => {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
+            "Content-Type": "application/json",
           },
         }
       );
@@ -55,7 +56,7 @@ const useUserApi = () => {
         return;
       }
 
-      const endpoint = `${API_BASE_URL}/users/${guid}/edit`;
+      const endpoint = `${API_BASE_URL}/users/update/${guid}`;
       const formData = new FormData();
 
       // Append all fields from the object
@@ -67,6 +68,7 @@ const useUserApi = () => {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
+          "Content-Type": "application/json",
         },
       });
 

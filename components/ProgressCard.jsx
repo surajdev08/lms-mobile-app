@@ -6,7 +6,7 @@ const ProgressCard = ({
   totalQuestions,
   currentQuestionIndex,
   selectedOptions,
-  markedForReview,
+
   onQuestionSelect,
   indexToGuidMap,
 }) => {
@@ -34,7 +34,8 @@ const ProgressCard = ({
       bgColor = "#72E128";
     }
 
-    let borderColor = markForReview?.[questionGuid] ? "#FDC453" : "#7D808E";
+    // let borderColor = markForReview?.[questionGuid] ? "#FDC453" : "#7D808E";
+    let borderColor = "#7D808E";
 
     if (index === currentQuestionIndex) {
       borderColor = "blue";
@@ -75,7 +76,7 @@ const ProgressCard = ({
   const unattendedCount = Object.values(selectedOptions)?.filter(
     (opt) => opt === "reset"
   )?.length;
-  const reviewCount = Object.values(markForReview)?.filter(Boolean)?.length;
+  // const reviewCount = Object.values(markForReview)?.filter(Boolean)?.length;
   const notVisitedCount = totalQuestions - Object.keys(selectedOptions)?.length;
 
   return (
@@ -104,7 +105,7 @@ const ProgressCard = ({
           color="#FF4D49"
           count={unattendedCount}
         />
-        <StatusItem label="Review" color="#FDC453" count={reviewCount} />
+        {/* <StatusItem label="Review" color="#FDC453" count={reviewCount} /> */}
         <StatusItem
           label="Not Visited"
           color="transparent"
