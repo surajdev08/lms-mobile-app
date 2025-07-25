@@ -13,13 +13,15 @@ import { OtpInput } from "react-native-otp-entry";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useAuth } from "../context/AuthContext";
-import useRegisterApi from "./hooks/useRegisterApi";
+import useLoginApi from "./hooks/useLoginApi";
 import useSettingsApi from "./hooks/useSettingsApi";
+
+import { saveToken, saveGuid } from "../utils/secureStore";
 const RightContent = (props) => (
   <AntDesign {...props} name="customerservice" size={24} color="#006FFD" />
 );
 
-const Register = () => {
+const loginotp = () => {
   const router = useRouter();
 
   const [mobile, setMobile] = useState("");
@@ -32,7 +34,9 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [status, setStatus] = useState("email");
   const [sendTrigger, setSendTrigger] = useState(false);
-  const { resgistrationSettings, settings } = useSettingsApi();
+  const { loginSettings, settings, signinSettings } = useSettingsApi();
+  const { login, user } = useAuth();
+  const [loading, setLoading] = useState(false);
   const {
     status: emailStatus,
     response,
@@ -41,23 +45,21 @@ const Register = () => {
     validateOtp,
     registerUser,
     validateMobile,
-  } = useRegisterApi(email, sendTrigger);
-
+    loginviaotp,
+  } = useLoginApi();
   const handleSendOtp = () => {
-    if (settings?.required_field_email === "1" && !email) {
-      alert("Email is required");
+    if (loginSettings?.login_field_mobile_show === 1 && mobile) {
+      validateEmail(mobile);
       return;
     }
-    if (settings?.required_field_mobile === "1" && !mobile) {
-      alert("Mobile number is required");
+    if (loginSettings?.login_field_email_show === 1 && email) {
+      validateEmail(email);
       return;
     }
-    validateEmail(email);
-    validateMobile(mobile);
   };
 
   useEffect(() => {
-    resgistrationSettings();
+    signinSettings();
   }, []);
 
   useEffect(() => {
@@ -68,40 +70,36 @@ const Register = () => {
     }
   }, [emailStatus]);
 
-  const verifyOtp = () => {
-    if (settings?.required_field_email === "1" && !email_otp) {
-      alert("Enter email OTP");
-      return;
+  useEffect(() => {
+    if (mobile_otp.length === 6 || email_otp.length === 6) {
+      validateOtp(email, email_otp, mobile, mobile_otp);
     }
-    if (settings?.required_field_mobile === "1" && !mobile_otp) {
-      alert("Enter mobile OTP");
-      return;
-    }
-
-    validateOtp(email, email_otp, mobile, mobile_otp);
-  };
+  }, [mobile_otp, email_otp]);
 
   useEffect(() => {
-    if (emailStatus === "success" && response?.message === "OTP_VALIDATED") {
-      setStatus("register");
+    if (email_otp.length === 6 && mobile_otp.length === 6) {
+      validateOtp(email, email_otp, mobile, mobile_otp);
     }
-  }, [emailStatus, response?.message]);
+  }, [email_otp, mobile_otp]);
 
-  const handleRegister = () => {
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
+  const handlelogin = async () => {
+    setLoading(true);
+    try {
+      const response = await loginviaotp(email, mobile);
+      if (response?.success) {
+        await saveToken(response.access_token);
+        await saveGuid(response.user.guid);
+        login({ user: response.user, token: response.access_token });
+        router.replace("/dashboard");
+      } else {
+        Alert.alert("Login Failed", "Invalid credentials");
+      }
+    } catch (err) {
+      Alert.alert("Error", "Something went wrong");
+    } finally {
+      setLoading(false);
     }
-
-    registerUser(firstName, lastName, password, confirmPassword, email, mobile);
   };
-
-  useEffect(() => {
-    if (emailStatus === "success" && response?.message === "USER_REGISTERED") {
-      setStatus("success");
-    }
-  }, [emailStatus, response?.message]);
-
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -122,14 +120,12 @@ const Register = () => {
           </View>
 
           <View style={styles.headerText}>
-            <Text style={{ fontSize: 20, color: "black" }}>
-              Register Your Account
-            </Text>
+            <Text style={{ fontSize: 20, color: "black" }}>Login via OTP</Text>
           </View>
 
           {status === "email" ? (
             <View style={styles.content}>
-              {settings?.registration_field_email_show === "1" && (
+              {loginSettings?.login_field_email_show === 1 && (
                 <TextInput
                   mode="outlined"
                   label="Email"
@@ -141,7 +137,7 @@ const Register = () => {
                 />
               )}
 
-              {settings?.registration_field_mobile_show === "1" && (
+              {loginSettings?.login_field_mobile_show === 1 && (
                 <TextInput
                   mode="outlined"
                   label="Mobile"
@@ -164,7 +160,7 @@ const Register = () => {
             </View>
           ) : status === "otp" ? (
             <View style={styles.content}>
-              {settings?.registration_field_email_show === "1" && (
+              {loginSettings?.login_field_email_show === 1 && (
                 <>
                   <Text>Email OTP</Text>
                   <OtpInput
@@ -175,7 +171,7 @@ const Register = () => {
                 </>
               )}
 
-              {settings?.registration_field_mobile_show === "1" && (
+              {loginSettings?.login_field_mobile_show === 1 && (
                 <>
                   <Text>Mobile OTP</Text>
                   <OtpInput
@@ -189,53 +185,11 @@ const Register = () => {
               <Button
                 style={{ backgroundColor: "#006FFD", width: "100%" }}
                 mode="contained"
-                onPress={verifyOtp}
+                onPress={handlelogin}
+                loading={loading}
+                disabled={loading}
               >
-                Validate OTP
-              </Button>
-            </View>
-          ) : status === "register" ? (
-            <View style={styles.content}>
-              <TextInput
-                mode="outlined"
-                label="First Name"
-                value={firstName}
-                onChangeText={setFirstName}
-                outlineColor="#006FFD"
-                activeOutlineColor="#006FFD"
-              />
-              <TextInput
-                mode="outlined"
-                label="Last Name"
-                value={lastName}
-                onChangeText={setLastName}
-                outlineColor="#006FFD"
-                activeOutlineColor="#006FFD"
-              />
-              <TextInput
-                mode="outlined"
-                label="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                outlineColor="#006FFD"
-                activeOutlineColor="#006FFD"
-              />
-              <TextInput
-                mode="outlined"
-                label="Confirm Password"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-                outlineColor="#006FFD"
-                activeOutlineColor="#006FFD"
-              />
-              <Button
-                style={{ backgroundColor: "#006FFD", width: "100%" }}
-                mode="contained"
-                onPress={handleRegister}
-              >
-                Register
+                Login
               </Button>
             </View>
           ) : (
@@ -268,7 +222,7 @@ const Register = () => {
                   textDecorationLine: "underline",
                 }}
               >
-                Sign In Instead?
+                Login with password instead?
               </Text>
             </Pressable>
           )}
@@ -320,4 +274,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Register;
+export default loginotp;

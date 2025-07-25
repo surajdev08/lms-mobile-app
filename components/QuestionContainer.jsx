@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import { Text } from "react-native-paper";
 import { useLocalSearchParams } from "expo-router";
@@ -34,6 +35,7 @@ const QuestionContainer = () => {
   const [questionTimerPerQuestion, setQuestionTimerPerQuestion] = useState({});
   const [questionTimer, setQuestionTimer] = useState(null);
   const [startTime, setStartTime] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const bottomSheetRef = useRef(null);
 
@@ -58,6 +60,22 @@ const QuestionContainer = () => {
         return [item]; // wrap single item in array to match flatMap
       }
     }) || [];
+
+  const formatAnswersForSubmission = (selectedOptions, questions) => {
+    const formatted = {};
+    for (const questionId in selectedOptions) {
+      if (!selectedOptions.hasOwnProperty(questionId)) continue;
+      const question = questions.find((q) => q.guid === questionId);
+      const answer = selectedOptions[questionId];
+
+      if (question?.type === "mcmc") {
+        formatted[questionId] = Array.isArray(answer) ? answer.join(",") : "";
+      } else {
+        formatted[questionId] = typeof answer === "string" ? answer : "";
+      }
+    }
+    return formatted;
+  };
 
   const currentQuestion = questions[currentQuestionIndex];
   const totalQuestions = questions.length;
@@ -143,22 +161,43 @@ const QuestionContainer = () => {
   };
 
   const handleSubmit = async () => {
-    saveTimeForCurrentQuestion();
+    Alert.alert("Submit Test", "Do you want to submit?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Yes",
+        onPress: async () => {
+          saveTimeForCurrentQuestion();
+          setIsSubmitting(true); // Start loading
 
-    try {
-      const response = await submitTest(guid, selectedOptions, timeTaken);
-      console.log("Test submitted!");
+          try {
+            const formattedAnswers = formatAnswersForSubmission(
+              selectedOptions,
+              questions
+            );
+            const response = await submitTest(
+              guid,
+              formattedAnswers,
+              timeTaken
+            );
+            console.log("Test submitted!");
 
-      // ✅ Redirect if successful
-      if (response?.status === 200) {
-        router.push("/TestSubmittedScreen");
-      } else {
-        console.warn("Test submission failed: ", response);
-      }
-    } catch (error) {
-      console.error("Error during submission:", error);
-    }
-    await deactivateKeepAwakeAsync();
+            if (response?.status === 200) {
+              router.push("/TestSubmittedScreen");
+            } else {
+              console.warn("Test submission failed: ", response);
+            }
+          } catch (error) {
+            console.error("Error during submission:", error);
+          } finally {
+            setIsSubmitting(false); // Stop loading
+            await deactivateKeepAwakeAsync();
+          }
+        },
+      },
+    ]);
   };
 
   const openSheet = () => {
@@ -205,13 +244,20 @@ const QuestionContainer = () => {
             handleOptionSelect(currentQuestion?.guid, value)
           }
           isMarkedForReview={markForReview?.[currentQuestion.guid] || false}
+          onMarkForReviewChange={(isMarked) =>
+            handleMarkForReviewChange(currentQuestion?.guid, isMarked)
+          }
+          questionType={currentQuestion?.type}
         />
 
         <TestNavigation
           handleNext={handleNextQuestion}
           handlePrevious={handlePreviousQuestion}
+          handleSubmit={handleSubmit}
           disablePrevious={currentQuestionIndex === 0}
           disableNext={currentQuestionIndex === totalQuestions - 1}
+          lastquestion={currentQuestionIndex === totalQuestions - 1}
+          isSubmitting={isSubmitting}
         />
       </View>
 

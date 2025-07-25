@@ -49,8 +49,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="report"
         options={{
-          headerShown: true,
-          headerTitle: "Submissions",
           title: "Report",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="file-text-o" color={color} />

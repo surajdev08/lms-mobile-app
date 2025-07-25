@@ -18,6 +18,13 @@ const TestSubmittedScreen = () => {
         <Button mode="contained" onPress={handleGoHome} style={styles.button}>
           Go to Home
         </Button>
+        <Button
+          mode="outlined"
+          onPress={() => router.push("/FeedbackFormScreen")}
+          style={styles.button}
+        >
+          Submit Feedback
+        </Button>
       </View>
     </SafeAreaView>
   );
@@ -51,5 +58,6 @@ const styles = StyleSheet.create({
   button: {
     width: 180,
     borderRadius: 8,
+    marginVertical: 10,
   },
 });

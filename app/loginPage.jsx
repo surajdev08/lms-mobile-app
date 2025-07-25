@@ -30,7 +30,8 @@ const loginPage = () => {
   const { login, user } = useAuth();
   const { loginUser } = useLoginApi();
   const router = useRouter();
-  const { resgistrationSettings, settings } = useSettingsApi();
+  const { resgistrationSettings, settings, loginSettings, signinSettings } =
+    useSettingsApi();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [checked, setChecked] = React.useState(false);
@@ -38,7 +39,7 @@ const loginPage = () => {
   const [captchaQuestion, setCaptchaQuestion] = useState("");
   const [captchaAnswer, setCaptchaAnswer] = useState(null);
   const [userCaptchaInput, setUserCaptchaInput] = useState("");
-
+  const [mobile, setMobile] = useState("");
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Missing Fields", "Email and Password are required.");
@@ -71,6 +72,7 @@ const loginPage = () => {
 
   useEffect(() => {
     resgistrationSettings();
+    signinSettings();
   }, []);
 
   useEffect(() => {
@@ -80,11 +82,15 @@ const loginPage = () => {
   }, [user]);
 
   const handleRegisterPress = () => {
-    if (settings?.disable_user_registration === "0") {
+    if (settings?.disable_user_registration === 0) {
       router.push("/register");
     } else {
       Alert.alert("Registration Disabled", "Please contact support.");
     }
+  };
+
+  const handleloginotp = () => {
+    router.push("/loginotp");
   };
 
   const handleForgotPasswordPress = () => {
@@ -125,15 +131,28 @@ const loginPage = () => {
 
           {/* Form */}
           <View style={styles.content}>
-            <TextInput
-              label="Email"
-              mode="outlined"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-            />
+            {loginSettings?.login_field_email_show === 1 && (
+              <TextInput
+                label="Email"
+                mode="outlined"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+              />
+            )}
+            {loginSettings?.login_field_mobile_show === 1 && (
+              <TextInput
+                label="Mobile"
+                mode="outlined"
+                value={mobile}
+                onChangeText={setMobile}
+                autoCapitalize="none"
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+              />
+            )}
             <TextInput
               label="Password"
               mode="outlined"
@@ -144,6 +163,18 @@ const loginPage = () => {
               outlineColor="#006FFD"
               activeOutlineColor="#006FFD"
             />
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Pressable onPress={handleForgotPasswordPress}>
+              <Text style={styles.linkText}>Forgot Password?</Text>
+            </Pressable>
           </View>
 
           {/* Checkbox + Link */}
@@ -185,8 +216,8 @@ const loginPage = () => {
               <Text style={styles.linkText}>Register your Account?</Text>
             </Pressable>
 
-            <Pressable onPress={handleForgotPasswordPress}>
-              <Text style={styles.linkText}>Forgot Password?</Text>
+            <Pressable onPress={handleloginotp}>
+              <Text style={styles.linkText}>Login via OTP?</Text>
             </Pressable>
           </View>
         </View>
@@ -231,6 +262,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     gap: 10,
+    justifyContent: "center",
   },
   linkText: {
     color: "#006FFD",

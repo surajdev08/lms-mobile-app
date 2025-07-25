@@ -1,32 +1,60 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Button, Surface } from "react-native-paper";
+import { Button } from "react-native-paper";
 
 const TestNavigation = ({
   handleNext,
   handlePrevious,
+  handleSubmit,
   disablePrevious,
   disableNext,
+  lastquestion = false,
+  isSubmitting = false,
 }) => {
   return (
     <View style={styles.footer}>
-      <Button
-        mode="outlined"
-        onPress={handlePrevious}
-        disabled={disablePrevious}
-        style={styles.button}
-      >
-        Previous
-      </Button>
+      {!lastquestion ? (
+        <>
+          <Button
+            mode="outlined"
+            onPress={handlePrevious}
+            disabled={disablePrevious}
+            style={styles.button}
+          >
+            Previous
+          </Button>
 
-      <Button
-        mode="contained"
-        onPress={handleNext}
-        disabled={disableNext}
-        style={styles.button}
-      >
-        Next
-      </Button>
+          <Button
+            mode="contained"
+            onPress={handleNext}
+            disabled={disableNext}
+            style={styles.button}
+          >
+            Next
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button
+            mode="outlined"
+            onPress={handlePrevious}
+            disabled={disablePrevious}
+            style={styles.button}
+          >
+            Previous
+          </Button>
+
+          <Button
+            mode="contained"
+            onPress={handleSubmit}
+            style={styles.button}
+            loading={isSubmitting}
+            disabled={isSubmitting}
+          >
+            Submit
+          </Button>
+        </>
+      )}
     </View>
   );
 };

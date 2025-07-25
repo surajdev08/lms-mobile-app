@@ -9,7 +9,7 @@ const Tab = createMaterialTopTabNavigator();
 export default function MyTabs() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <Tab.Navigator>
+      <Tab.Navigator initialRouteName="Ongoing">
         <Tab.Screen name="Upcoming" component={Upcoming} />
         <Tab.Screen name="Ongoing" component={Ongoing} />
         <Tab.Screen name="Previous" component={Previous} />

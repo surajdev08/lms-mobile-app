@@ -35,7 +35,7 @@ const TestHeader = ({
         <Text>{timeLeft}s</Text>
 
         <Text onPress={() => router.back()}>Back</Text>
-        <Text onPress={handleSubmit}>submit</Text>
+
         <View
           style={{ height: "24px", width: "60px", backgroundColor: "#E7F4E8" }}
         >

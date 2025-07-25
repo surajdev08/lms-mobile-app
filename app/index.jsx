@@ -26,11 +26,12 @@ const RightContent = () => (
   <AntDesign name="customerservice" size={24} color="#006FFD" />
 );
 
-const loginPage = () => {
+const index = () => {
   const { login, user } = useAuth();
   const { loginUser } = useLoginApi();
   const router = useRouter();
-  const { resgistrationSettings, settings } = useSettingsApi();
+  const { resgistrationSettings, settings, loginSettings, signinSettings } =
+    useSettingsApi();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [checked, setChecked] = React.useState(false);
@@ -38,7 +39,7 @@ const loginPage = () => {
   const [captchaQuestion, setCaptchaQuestion] = useState("");
   const [captchaAnswer, setCaptchaAnswer] = useState(null);
   const [userCaptchaInput, setUserCaptchaInput] = useState("");
-
+  const [mobile, setMobile] = useState("");
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Missing Fields", "Email and Password are required.");
@@ -58,7 +59,7 @@ const loginPage = () => {
         await saveToken(response.access_token);
         await saveGuid(response.user.guid);
         login({ user: response.user, token: response.access_token });
-        router.push("/dashboard");
+        router.replace("/dashboard");
       } else {
         Alert.alert("Login Failed", "Invalid credentials");
       }
@@ -71,20 +72,27 @@ const loginPage = () => {
 
   useEffect(() => {
     resgistrationSettings();
+    signinSettings();
   }, []);
+
+  console.log("Login Settings:", loginSettings);
 
   useEffect(() => {
     if (user) {
-      router.push("/register");
+      router.replace("/dashboard");
     }
   }, [user]);
 
   const handleRegisterPress = () => {
     if (settings?.disable_user_registration === "0") {
-      router.push("/dashboard");
+      router.push("/register");
     } else {
       Alert.alert("Registration Disabled", "Please contact support.");
     }
+  };
+
+  const handleloginotp = () => {
+    router.push("/loginotp");
   };
 
   const handleForgotPasswordPress = () => {
@@ -125,15 +133,28 @@ const loginPage = () => {
 
           {/* Form */}
           <View style={styles.content}>
-            <TextInput
-              label="Email"
-              mode="outlined"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              outlineColor="#006FFD"
-              activeOutlineColor="#006FFD"
-            />
+            {loginSettings?.login_field_email_show === 1 && (
+              <TextInput
+                label="Email"
+                mode="outlined"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+              />
+            )}
+            {loginSettings?.login_field_mobile_show === 1 && (
+              <TextInput
+                label="Mobile"
+                mode="outlined"
+                value={mobile}
+                onChangeText={setMobile}
+                autoCapitalize="none"
+                outlineColor="#006FFD"
+                activeOutlineColor="#006FFD"
+              />
+            )}
             <TextInput
               label="Password"
               mode="outlined"
@@ -144,6 +165,18 @@ const loginPage = () => {
               outlineColor="#006FFD"
               activeOutlineColor="#006FFD"
             />
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Pressable onPress={handleForgotPasswordPress}>
+              <Text style={styles.linkText}>Forgot Password?</Text>
+            </Pressable>
           </View>
 
           {/* Checkbox + Link */}
@@ -185,8 +218,8 @@ const loginPage = () => {
               <Text style={styles.linkText}>Register your Account?</Text>
             </Pressable>
 
-            <Pressable onPress={handleForgotPasswordPress}>
-              <Text style={styles.linkText}>Forgot Password?</Text>
+            <Pressable onPress={handleloginotp}>
+              <Text style={styles.linkText}>Login via OTP?</Text>
             </Pressable>
           </View>
         </View>
@@ -204,7 +237,7 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     justifyContent: "center",
-    gap: 25,
+    gap: 30,
   },
   header: {
     flexDirection: "row",
@@ -231,13 +264,14 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     gap: 10,
+    justifyContent: "center",
   },
   linkText: {
     color: "#006FFD",
     textDecorationLine: "underline",
   },
   action: {
-    marginTop: 10,
+    marginTop: 5,
     alignItems: "center",
   },
   loginButton: {
@@ -246,4 +280,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default loginPage;
+export default index;

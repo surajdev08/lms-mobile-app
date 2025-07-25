@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const API_BASE_URL = "https://test.lms.developer1.website";
+const API_BASE_URL = "https://dev.lms.developer1.website";
 
 const useResetPasswordApi = () => {
   const [status, setStatus] = useState("idle");

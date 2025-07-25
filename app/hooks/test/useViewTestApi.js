@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 import { getToken, getGuid } from "../../../utils/secureStore";
 
-const API_BASE_URL = "https://test.lms.developer1.website";
+const API_BASE_URL = "https://dev.lms.developer1.website";
 
 const useViewTestApi = () => {
   const [viewTestData, setViewTestData] = useState(null);

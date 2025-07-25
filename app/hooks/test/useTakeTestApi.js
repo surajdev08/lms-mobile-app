@@ -15,7 +15,7 @@ const useTakeTestApi = () => {
   const [testQuestions, setTestQuestion] = useState([]);
   const [loading, setLoading] = useState(true);
   const [testGuid, setTestGuid] = useState(null);
-  const API_BASE_URL = "https://test.lms.developer1.website";
+  const API_BASE_URL = "https://dev.lms.developer1.website";
   const [testSessionKey, setTestSessionKey] = useState(null);
   const router = useRouter();
 

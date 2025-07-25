@@ -7,7 +7,7 @@ const useUserApi = () => {
   const [userData, setUserData] = useState(null); // changed from []
   const [error, setError] = useState(null);
 
-  const API_BASE_URL = "https://test.lms.developer1.website";
+  const API_BASE_URL = "https://dev.lms.developer1.website";
 
   const fetchUserById = async () => {
     try {
@@ -81,11 +81,45 @@ const useUserApi = () => {
     }
   };
 
+  const updateProfileimg = async (imageFile) => {
+    try {
+      const token = await getToken("access_token");
+      const guid = await getGuid("guid");
+
+      if (!token || !guid) {
+        setError("Missing token or user GUID");
+        return;
+      }
+
+      const endpoint = `${API_BASE_URL}/users/userpic/upload`;
+      const formData = new FormData();
+
+      // Append all fields from the object
+
+      formData.append("profile_image", imageFile);
+
+      const response = await axios.post(endpoint, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
+
+      setError(null);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating user data:", error.response?.data || error);
+      setError(error.response?.data?.message || "Something went wrong.");
+      return null;
+    }
+  };
+
   return {
     error,
     fetchUserById,
     userData,
     updateUser,
+    updateProfileimg,
   };
 };
 

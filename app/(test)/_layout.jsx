@@ -10,8 +10,6 @@ export default function Layout() {
           name="taketest"
           options={{
             headerTitle: "Take Test",
-            headerBackTitle: "Go back",
-            headerBackVisible: false,
           }}
         />
         <Stack.Screen

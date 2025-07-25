@@ -17,10 +17,19 @@ const report = () => {
     fetchSubmissions();
   }, []);
 
+  const handleTestSelect = (test) => {
+    console.log("Selected Test:", test?.guid);
+    setSelectedTest(test);
+    router.push({
+      pathname: "/SummaryReport",
+      params: { testguid: test?.guid }, // ✅ use test directly
+    });
+  };
+
   const renderEmptyStateCard = () => (
     <Card style={{ margin: 20, padding: 20, alignItems: "center" }}>
       <Text style={{ fontSize: 16, marginBottom: 10 }}>
-        {error ? "Something went wrong." : "No ongoing tests available."}
+        {error ? "Nothing to show." : "No submissions available."}
       </Text>
       <Button
         mode="contained"
@@ -34,26 +43,32 @@ const report = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
-        {!submissionData || submissionData.length === 0 || error ? (
-          renderEmptyStateCard()
-        ) : (
-          <FlatList
-            contentContainerStyle={{
-              flexGrow: 1,
-              paddingHorizontal: 20,
-              gap: 15,
-              paddingVertical: 20,
-            }}
-            showsHorizontalScrollIndicator={false}
-            data={submissionData}
-            renderItem={({ item }) => (
-              <SubmissionCard title={item.test?.title} time={item.start_time} />
-            )}
-            keyExtractor={(item) => item.id.toString()}
-          />
-        )}
-      </View>
+      <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1 }}>
+          {!submissionData || submissionData.length === 0 || error ? (
+            renderEmptyStateCard()
+          ) : (
+            <FlatList
+              contentContainerStyle={{
+                flexGrow: 1,
+                paddingHorizontal: 20,
+                gap: 15,
+                paddingVertical: 20,
+              }}
+              showsHorizontalScrollIndicator={false}
+              data={submissionData}
+              renderItem={({ item }) => (
+                <SubmissionCard
+                  title={item.test?.title}
+                  time={item.start_time}
+                  handlePress={() => handleTestSelect(item.test)}
+                />
+              )}
+              keyExtractor={(item) => item.id.toString()}
+            />
+          )}
+        </View>
+      </SafeAreaView>
     </GestureHandlerRootView>
   );
 };

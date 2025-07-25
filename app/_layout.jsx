@@ -3,7 +3,7 @@ import { Slot, useRouter, useSegments } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AuthProvider, useAuth } from "../context/AuthContext";
 
-function RedirectIfNeeded() {
+function AuthenticatedLayout() {
   const { user } = useAuth();
   const router = useRouter();
   const segments = useSegments();
@@ -22,7 +22,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <RedirectIfNeeded />
+        <AuthenticatedLayout />
       </GestureHandlerRootView>
     </AuthProvider>
   );
